@@ -1,7 +1,20 @@
 namespace CaptainCoder.Dungeoneering.Model;
 
-public record class TileEdge(Position Position, Facing Facing)
+public record class TileEdge(Position Position, Facing Facing) : IEquatable<TileEdge>
 {
+    public virtual bool Equals(TileEdge other)
+    {
+        TileEdge normalized = this.Normalize();
+        TileEdge normalizedOther = other.Normalize();
+        return normalized.Position == normalizedOther.Position &&
+               normalized.Facing == normalizedOther.Facing;
+    }
+
+    public override int GetHashCode()
+    {
+        TileEdge normalized = this.Normalize();
+        return HashCode.Combine(normalized.Position, normalized.Facing);
+    }
 }
 
 public static class TileEdgeExtensions
