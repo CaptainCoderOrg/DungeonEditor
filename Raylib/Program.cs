@@ -1,8 +1,8 @@
 ﻿namespace CaptainCoder.Dungeoneering.Raylib;
 
-using Raylib_cs;
-
 using System.Text.Json;
+
+using Raylib_cs;
 
 public class Program
 {
