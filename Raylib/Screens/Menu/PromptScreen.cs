@@ -5,16 +5,23 @@ using System.Text;
 
 using Raylib_cs;
 
-public class PromptScreen(string prompt, IScreen previousScreen, Action<string> onFinish) : IScreen
+public class PromptScreen(string prompt, IScreen previousScreen, Action<string> onFinish, Action? onCancel = null) : IScreen
 {
     public string Prompt { get; } = prompt;
     public Action<string> OnFinish { get; } = onFinish;
+    public Action? OnCancel { get; } = onCancel;
     public string UserInput { get; private set; } = string.Empty;
     private readonly StringBuilder _builder = new();
     public IScreen PreviousScreen { get; } = previousScreen;
 
     public void HandleUserInput()
     {
+        if (Raylib.IsKeyPressed(KeyboardKey.Escape))
+        {
+            Program.Screen = PreviousScreen;
+            OnCancel?.Invoke();
+            return;
+        }
         if (Raylib.IsKeyPressed(KeyboardKey.Backspace) && _builder.Length > 0)
         {
             _builder.Remove(_builder.Length - 1, 1);

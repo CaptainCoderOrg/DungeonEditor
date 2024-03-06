@@ -10,6 +10,7 @@ public class DungeonEditorScreen : IScreen
     public Cursor Cursor { get; private set; } = new(new Position(0, 0), Facing.West);
     public WallMap WallMap { get; private set; } = new();
     private string? _filename = null;
+    private readonly InfoOverLayScreen _overlay = new();
     public IScreen EditorMenu => new ModalMenuScreen(
         this,
         new MenuScreen("Menu",
@@ -33,6 +34,8 @@ public class DungeonEditorScreen : IScreen
             return;
         }
         File.WriteAllText(_filename, WallMap.ToJson());
+        _overlay.AddMessage($"File saved: {_filename}!", Color.Green);
+        Program.Screen = this;
     }
 
     public void SaveAs()
@@ -54,8 +57,11 @@ public class DungeonEditorScreen : IScreen
             if (!File.Exists(filename))
             {
                 Console.Error.WriteLine($"File not found: {filename}");
+                _overlay.AddMessage($"File not found: {filename}", Color.Red);
                 return;
             }
+            _overlay.AddMessage($"File loaded!", Color.Green);
+
             _filename = filename;
             string json = File.ReadAllText(filename);
             WallMap = JsonExtensions.LoadModel<WallMap>(json);
@@ -67,6 +73,7 @@ public class DungeonEditorScreen : IScreen
         Raylib.ClearBackground(Color.Black);
         WallMap.Render();
         Cursor.Render();
+        _overlay.Render();
     }
 
     public void HandleUserInput()
