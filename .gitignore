@@ -368,3 +368,4 @@ FodyWeavers.xsd
 # Ignore Code Coverage Report Directory
 html-coverage-report/
 .DS_Store
+.save-data
