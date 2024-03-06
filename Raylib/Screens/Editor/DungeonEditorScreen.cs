@@ -1,24 +1,44 @@
 namespace CaptainCoder.Dungeoneering.Raylib;
 
+using CaptainCoder.Dungeoneering.Model.IO;
+
 using Raylib_cs;
 
 public class DungeonEditorScreen : IScreen
 {
     public const int CellSize = 16;
-    public Cursor Cursor = new(new Position(0, 0), Facing.West);
-    public WallMap WallMap = new();
+    public Cursor Cursor { get; private set; } = new(new Position(0, 0), Facing.West);
+    public WallMap WallMap { get; private set; } = new();
+    public IScreen EditorMenu => new ModalMenuScreen(
+        this,
+        new MenuScreen("Menu",
+        [
+            new StaticEntry("Save", () => File.WriteAllText("map.json", WallMap.ToJson())),
+            new StaticEntry("Load", () => LoadMap("map.json")),
+            new StaticEntry("Return to Editor", () => Program.Screen = this),
+            new StaticEntry("Exit Editor", Program.Exit),
+        ]
+    ));
+
+    public void LoadMap(string path)
+    {
+        string json = File.ReadAllText(path);
+        WallMap = JsonExtensions.LoadModel<WallMap>(json);
+    }
 
     public void Render()
     {
-        Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
         WallMap.Render();
         Cursor.Render();
-        Raylib.EndDrawing();
     }
 
     public void HandleUserInput()
     {
+        if (Raylib.IsKeyPressed(KeyboardKey.Escape))
+        {
+            Program.Screen = EditorMenu;
+        }
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
             if (WallMap.TryGetWall(Cursor.Position, Cursor.Facing, out _))
