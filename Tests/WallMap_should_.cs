@@ -40,7 +40,7 @@ public class WallMap_should_
     public void save_as_json_and_restore_from_json(WallMap underTest)
     {
         string json = underTest.ToJson();
-        WallMap actual = json.LoadModel<WallMap>();
+        WallMap actual = JsonExtensions.LoadModel<WallMap>(json);
         underTest.Map.Count.ShouldBe(actual.Map.Count);
         underTest.Map.Keys.ShouldBeSubsetOf(actual.Map.Keys);
         foreach (var key in underTest.Map.Keys)

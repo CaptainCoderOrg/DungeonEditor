@@ -2,44 +2,19 @@
 
 using Newtonsoft.Json;
 
-public static class IOExtensions
+public static class JsonExtensions
 {
 
-    public static string ToJson(this WallMap wallMap)
-    {
-        return JsonConvert.SerializeObject(wallMap, WallMapJsonConverter.Shared);
-    }
+    public static string ToJson(this WallMap wallMap) => JsonConvert.SerializeObject(wallMap, WallMapJsonConverter.Shared);
 
-    public static T LoadModel<T>(this string json)
+    public static T LoadModel<T>(string json)
     {
-        if (typeof(T) == typeof(WallMap))
+        if (typeof(T) == typeof(WallMap) && LoadWallMapFromJson(json) is T result)
         {
-            WallMap val = LoadWallMapFromJson(json);
-            if (val is T tb) { return tb; }
+            return result;
         }
-        throw new Exception($"Unable to load model of type {typeof(T)}.");
+        throw new JsonException($"Unable to load model of type \"{typeof(T)}\" from json \"{json}\".");
     }
 
-    public static WallMap LoadWallMapFromJson(string json)
-    {
-        return JsonConvert.DeserializeObject<WallMap>(json, WallMapJsonConverter.Shared);
-    }
-
-}
-
-public class WallMapJsonConverter : JsonConverter<WallMap>
-{
-    public static WallMapJsonConverter Shared { get; } = new();
-    public override WallMap? ReadJson(JsonReader reader, Type objectType, WallMap? existingValue, bool hasExistingValue, JsonSerializer serializer)
-    {
-        (TileEdge edge, WallType wall)[]? elems = JsonConvert.DeserializeObject<(TileEdge, WallType)[]>((string)reader.Value);
-        return new WallMap(elems);
-    }
-
-    public override void WriteJson(JsonWriter writer, WallMap? value, JsonSerializer serializer)
-    {
-        (TileEdge, WallType)[] elems = value.Map.Select(kvp => (kvp.Key, kvp.Value)).ToArray();
-        string json = JsonConvert.SerializeObject(elems);
-        writer.WriteValue(json);
-    }
+    public static WallMap LoadWallMapFromJson(string json) => JsonConvert.DeserializeObject<WallMap>(json, WallMapJsonConverter.Shared) ?? throw new JsonException($"Could not parse WallMap from \"{json}\"");
 }
