@@ -53,21 +53,39 @@ public class DungeonEditorScreen : IScreen
         HandleCursorMovement();
     }
 
+    private bool IsShiftDown => Raylib.IsKeyDown(KeyboardKey.LeftShift) || Raylib.IsKeyDown(KeyboardKey.RightShift);
+
     private void HandleCursorMovement()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.W))
+        if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.W))
+        {
+            Cursor = Cursor.Move(Facing.North);
+        }
+        else if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.S))
+        {
+            Cursor = Cursor.Move(Facing.South);
+        }
+        else if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.D))
+        {
+            Cursor = Cursor.Move(Facing.East);
+        }
+        else if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.A))
+        {
+            Cursor = Cursor.Move(Facing.West);
+        }
+        else if (Raylib.IsKeyPressed(KeyboardKey.W))
         {
             Cursor = MoveOrRotate(Facing.North);
         }
-        if (Raylib.IsKeyPressed(KeyboardKey.D))
+        else if (Raylib.IsKeyPressed(KeyboardKey.D))
         {
             Cursor = MoveOrRotate(Facing.East);
         }
-        if (Raylib.IsKeyPressed(KeyboardKey.S))
+        else if (Raylib.IsKeyPressed(KeyboardKey.S))
         {
             Cursor = MoveOrRotate(Facing.South);
         }
-        if (Raylib.IsKeyPressed(KeyboardKey.A))
+        else if (Raylib.IsKeyPressed(KeyboardKey.A))
         {
             Cursor = MoveOrRotate(Facing.West);
         }
@@ -77,7 +95,7 @@ public class DungeonEditorScreen : IScreen
     {
         if (Cursor.Facing == facing)
         {
-            return Cursor.Move(facing);
+            return Cursor.MoveAndRotate(facing);
         }
         else
         {
