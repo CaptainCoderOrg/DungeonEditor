@@ -4,6 +4,7 @@ public record class TileEdge(Position Position, Facing Facing) : IEquatable<Tile
 {
     public virtual bool Equals(TileEdge other)
     {
+        if (other is null) { return false; }
         TileEdge normalized = this.Normalize();
         TileEdge normalizedOther = other.Normalize();
         return normalized.Position == normalizedOther.Position &&

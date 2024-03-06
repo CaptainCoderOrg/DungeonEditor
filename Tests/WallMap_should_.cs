@@ -7,7 +7,6 @@ using Shouldly;
 
 public class WallMap_should_
 {
-
     [Fact]
     public void not_update_count_when_setting_matching_shared_wall()
     {
