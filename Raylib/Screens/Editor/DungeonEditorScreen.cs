@@ -9,21 +9,57 @@ public class DungeonEditorScreen : IScreen
     public const int CellSize = 16;
     public Cursor Cursor { get; private set; } = new(new Position(0, 0), Facing.West);
     public WallMap WallMap { get; private set; } = new();
+    private string? _filename = null;
     public IScreen EditorMenu => new ModalMenuScreen(
         this,
         new MenuScreen("Menu",
         [
-            new StaticEntry("Save", () => File.WriteAllText("map.json", WallMap.ToJson())),
-            new StaticEntry("Load", () => LoadMap("map.json")),
+            new DynamicEntry(
+                () => "Save " + (_filename ?? string.Empty),
+                _filename is null ? SaveAs : Save
+            ),
+            new StaticEntry("Save As", SaveAs),
+            new StaticEntry("Load", LoadMap),
             new StaticEntry("Return to Editor", () => Program.Screen = this),
             new StaticEntry("Exit Editor", Program.Exit),
         ]
     ));
 
-    public void LoadMap(string path)
+    public void Save()
     {
-        string json = File.ReadAllText(path);
-        WallMap = JsonExtensions.LoadModel<WallMap>(json);
+        if (_filename is null)
+        {
+            SaveAs();
+            return;
+        }
+        File.WriteAllText(_filename, WallMap.ToJson());
+    }
+
+    public void SaveAs()
+    {
+        Program.Screen = new PromptScreen("Save As", this, OnFinished);
+        void OnFinished(string filename)
+        {
+            _filename = $"{filename}.json";
+            Save();
+        }
+    }
+
+    public void LoadMap()
+    {
+        Program.Screen = new PromptScreen("Load File", this, OnFinish);
+        void OnFinish(string filename)
+        {
+            filename = $"{filename}.json";
+            if (!File.Exists(filename))
+            {
+                Console.Error.WriteLine($"File not found: {filename}");
+                return;
+            }
+            _filename = filename;
+            string json = File.ReadAllText(filename);
+            WallMap = JsonExtensions.LoadModel<WallMap>(json);
+        }
     }
 
     public void Render()

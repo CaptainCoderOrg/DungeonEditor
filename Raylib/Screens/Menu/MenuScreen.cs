@@ -42,23 +42,16 @@ public class MenuScreen(string title, IEnumerable<MenuEntry> items) : IScreen
         int menuHeight = TitleFontSize * 2 + ItemFontSize * _items.Length;
         int center = Raylib.GetScreenHeight() / 2;
         int top = center - menuHeight / 2;
-        DrawCenteredText(_title, top, TitleFontSize, Color.White);
+        _title.DrawCentered(top, TitleFontSize, Color.White);
 
         top += TitleFontSize;
         for (int ix = 0; ix < _items.Length; ix++)
         {
             top += ItemFontSize;
             Color color = _selectedIx == ix ? Color.Yellow : Color.White;
-            DrawCenteredText(_items[ix].ToString(), top, ItemFontSize, color);
+            _items[ix].ToString().DrawCentered(top, ItemFontSize, color);
         }
     }
 
-    private void DrawCenteredText(string text, int top, int fontSize, Color color)
-    {
-        int width = Raylib.MeasureText(text, fontSize);
-        int center = (Raylib.GetScreenWidth() / 2) - (width / 2);
-        Raylib.DrawText(text, center + 2, top + 2, fontSize, Color.Black);
-        Raylib.DrawText(text, center, top, fontSize, color);
-    }
 
 }
