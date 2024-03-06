@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace CaptainCoder.Dungeoneering.Model;
 
-public class WallMap
+public class WallMap()
 {
     public WallType this[Position position, Facing facing]
     {
@@ -17,4 +17,12 @@ public class WallMap
     public WallType GetWall(Position position, Facing facing) => _map[new TileEdge(position, facing).Normalize()];
     public bool TryGetWall(Position position, Facing facing, out WallType wall) => _map.TryGetValue(new TileEdge(position, facing).Normalize(), out wall);
     public int Count => _map.Count;
+
+    public WallMap(IEnumerable<(TileEdge, WallType)> edges) : this()
+    {
+        foreach ((TileEdge edge, WallType wall) in edges)
+        {
+            _map.Add(edge, wall);
+        }
+    }
 }
