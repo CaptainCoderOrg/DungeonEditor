@@ -10,7 +10,7 @@ public class TileEdge_should_
     [Fact]
     public void not_be_equal_to_null()
     {
-        TileEdge underTest = new(new Position(0,0), Facing.North);
+        TileEdge underTest = new(new Position(0, 0), Facing.North);
         underTest.Equals(null!).ShouldBeFalse();
     }
 
@@ -31,8 +31,8 @@ public class TileEdge_should_
     public static IEnumerable<object[]> BeEqualToNormalizedValue => [
         [new TileEdge(new Position(0, 0), Facing.North)],
         [new TileEdge(new Position(0, 0), Facing.South)],
-        [new TileEdge(new Position(0, 0), Facing.East)] ,
-        [new TileEdge(new Position(0, 0), Facing.West)] ,
+        [new TileEdge(new Position(0, 0), Facing.East)],
+        [new TileEdge(new Position(0, 0), Facing.West)],
     ];
 
     [Theory]
@@ -46,8 +46,8 @@ public class TileEdge_should_
     public static IEnumerable<object[]> BeEqualToSelf => [
         [new TileEdge(new Position(0, 0), Facing.North)],
         [new TileEdge(new Position(0, 0), Facing.South)],
-        [new TileEdge(new Position(0, 0), Facing.East)] ,
-        [new TileEdge(new Position(0, 0), Facing.West)] ,
+        [new TileEdge(new Position(0, 0), Facing.East)],
+        [new TileEdge(new Position(0, 0), Facing.West)],
     ];
 
     [Theory]
@@ -60,8 +60,8 @@ public class TileEdge_should_
     public static IEnumerable<object[]> BeEqualSharedWall => [
         [new TileEdge(new Position(0, 0), Facing.North), new TileEdge(new Position(0, -1), Facing.South)],
         [new TileEdge(new Position(0, 0), Facing.South), new TileEdge(new Position(0, 1), Facing.North)],
-        [new TileEdge(new Position(0, 0), Facing.East), new TileEdge(new Position(1, 0), Facing.West)] ,
-        [new TileEdge(new Position(0, 0), Facing.West), new TileEdge(new Position(-1, 0), Facing.East)] ,
+        [new TileEdge(new Position(0, 0), Facing.East), new TileEdge(new Position(1, 0), Facing.West)],
+        [new TileEdge(new Position(0, 0), Facing.West), new TileEdge(new Position(-1, 0), Facing.East)],
     ];
 
     [Theory]
@@ -75,7 +75,6 @@ public class TileEdge_should_
         [new TileEdge(new Position(0, 0), Facing.North), new TileEdge(new Position(0, 0), Facing.South)],
         [new TileEdge(new Position(0, 0), Facing.North), new TileEdge(new Position(0, 0), Facing.West)],
         [new TileEdge(new Position(0, 0), Facing.North), new TileEdge(new Position(0, 0), Facing.East)],
-        
         [new TileEdge(new Position(0, 0), Facing.North), new TileEdge(new Position(1, 1), Facing.North)],
         [new TileEdge(new Position(0, 0), Facing.East), new TileEdge(new Position(1, 1), Facing.East)],
         [new TileEdge(new Position(0, 0), Facing.West), new TileEdge(new Position(1, 1), Facing.West)],

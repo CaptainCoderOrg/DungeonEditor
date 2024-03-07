@@ -19,7 +19,8 @@ public class WallMap_should_
         underTest[new Position(5, 4), Facing.South].ShouldBe(WallType.Solid);
     }
 
-    public static IEnumerable<object[]> SaveAsJsonAndRestorFromJsonData() { 
+    public static IEnumerable<object[]> SaveAsJsonAndRestorFromJsonData()
+    {
         WallMap empty = new();
         WallMap oneWall = new();
         oneWall.SetWall(new Position(2, 5), Facing.North, WallType.Solid);

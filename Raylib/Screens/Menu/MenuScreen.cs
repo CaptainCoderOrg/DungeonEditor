@@ -52,7 +52,10 @@ public class MenuScreen(string title, IEnumerable<MenuEntry> items, int maxShown
         {
             if (_selectedIx == ix)
             {
-                _items[_selectedIx].ToString().DrawCentered(top, SelectedFontSize, Color.Yellow);
+                if (_selectedIx >= 0 && _selectedIx < _items.Length)
+                {
+                    _items[_selectedIx].ToString().DrawCentered(top, SelectedFontSize, Color.Yellow);
+                }
                 top += SelectedFontSize + Padding;
             }
             else

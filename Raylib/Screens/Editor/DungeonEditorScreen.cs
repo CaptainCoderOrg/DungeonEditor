@@ -13,22 +13,33 @@ public class DungeonEditorScreen : IScreen
     public WallMap WallMap { get; private set; } = WallMapExtensions.CreateEmpty(MaxMapSize, MaxMapSize);
     private string? _filename = null;
     private readonly InfoOverLayScreen _overlay = new();
-    public IScreen EditorMenu => new ModalMenuScreen(
-        this,
-        new MenuScreen("Menu",
-        [
-            new DynamicEntry(
-                () => "Save " + (_filename ?? string.Empty),
-                _filename is null ? SaveAs : Save
-            ),
-            new StaticEntry("Save As", SaveAs),
-            new StaticEntry("New Map", NewMap),
-            new StaticEntry("Randomize Map", RandomizeMap),
-            new StaticEntry("Load", LoadMap),
-            new StaticEntry("Return to Editor", () => Program.Screen = this),
-            new StaticEntry("Exit Editor", Program.Exit),
-        ]
-    ));
+    private IScreen? _editorMenu;
+    public IScreen EditorMenu
+    {
+        get
+        {
+            if (_editorMenu is null)
+            {
+                _editorMenu = new ModalMenuScreen(
+                    this,
+                    new MenuScreen("Menu",
+                    [
+                        new DynamicEntry(
+                            () => "Save " + (_filename ?? string.Empty),
+                            _filename is null ? SaveAs : Save
+                        ),
+                        new StaticEntry("Save As", SaveAs),
+                        new StaticEntry("New Map", NewMap),
+                        new StaticEntry("Randomize Map", RandomizeMap),
+                        new StaticEntry("Load", LoadMap),
+                        new StaticEntry("Return to Editor", () => Program.Screen = this),
+                        new StaticEntry("Exit Editor", Program.Exit),
+                    ]
+                ));
+            }
+            return _editorMenu;
+        }
+    }
 
     private void RandomizeMap()
     {
@@ -66,6 +77,7 @@ public class DungeonEditorScreen : IScreen
 
     public void LoadMap()
     {
+        Directory.CreateDirectory(Path.Combine(".save-data"));
         string[] filenames = Directory.GetFiles(Path.Combine(".save-data"));
         Program.Screen = new ModalMenuScreen(
             this,
