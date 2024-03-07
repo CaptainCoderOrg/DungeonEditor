@@ -7,6 +7,13 @@ using Shouldly;
 public class TileEdge_should_
 {
 
+    [Fact]
+    public void not_be_equal_to_null()
+    {
+        TileEdge underTest = new(new Position(0,0), Facing.North);
+        underTest.Equals(null!).ShouldBeFalse();
+    }
+
     public static IEnumerable<object[]> NormalizeTestData => [
         [new TileEdge(new Position(0, 0), Facing.North), new TileEdge(new Position(0, 0), Facing.North)],
         [new TileEdge(new Position(0, 0), Facing.South), new TileEdge(new Position(0, 1), Facing.North)],

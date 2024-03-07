@@ -22,7 +22,9 @@ public class Program
         while (!Raylib.WindowShouldClose() && s_isRunning)
         {
             Screen.HandleUserInput();
+            Raylib.BeginDrawing();
             Screen.Render();
+            Raylib.EndDrawing();
         }
         SaveScreenConfig(new ScreenConfig(Raylib.GetCurrentMonitor()));
         Raylib.CloseWindow();

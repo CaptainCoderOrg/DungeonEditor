@@ -10,6 +10,7 @@ public enum Facing
 
 public static class FacingExtensions
 {
+    public static Facing[] Values => [Facing.North, Facing.East, Facing.South, Facing.West];
     public static Facing Rotate(this Facing facing) => facing switch
     {
         Facing.North => Facing.East,

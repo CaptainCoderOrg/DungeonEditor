@@ -6,10 +6,10 @@ using Raylib_cs;
 
 public static class CursorExtensions
 {
-    public static void Render(this Cursor cursor, int cellSize = DungeonEditorScreen.CellSize)
+    public static void Render(this Cursor cursor, int cellSize = DungeonEditorScreen.CellSize, int left = 0, int top = 0)
     {
-        float x = (float)(cursor.Position.X * cellSize);
-        float y = (float)(cursor.Position.Y * cellSize);
+        float x = (float)(cursor.Position.X * cellSize + left);
+        float y = (float)(cursor.Position.Y * cellSize + top);
         Vector2[] points = CursorPoints(cursor.Facing, x, y);
         Raylib.DrawTriangle(points[0], points[1], points[2], Color.Yellow);
     }
