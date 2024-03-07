@@ -6,19 +6,19 @@ using Raylib_cs;
 
 public static class WallMapRenderer
 {
-    public static void Render(this WallMap map)
+    public static void Render(this WallMap map, int left = 0, int top = 0)
     {
         foreach ((TileEdge edge, WallType _) in map.Map)
         {
-            Line line = edge.ToScreenCoords(DungeonEditorScreen.CellSize);
+            Line line = edge.ToScreenCoords(DungeonEditorScreen.CellSize, left, top);
             line.Render(2, Color.DarkGray);
         }
     }
 
-    public static Line ToScreenCoords(this TileEdge edge, int cellSize)
+    public static Line ToScreenCoords(this TileEdge edge, int cellSize, int left = 0, int top = 0)
     {
-        float baseX = edge.Position.X * cellSize;
-        float baseY = edge.Position.Y * cellSize;
+        float baseX = edge.Position.X * cellSize + left;
+        float baseY = edge.Position.Y * cellSize + top;
         var (startX, startY) = edge.Facing switch
         {
             Facing.North or Facing.West => (baseX, baseY),

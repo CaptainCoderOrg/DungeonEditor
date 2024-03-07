@@ -26,3 +26,43 @@ public class WallMap()
         }
     }
 }
+
+public static class WallMapExtensions
+{
+    public static WallMap CreateEmpty(int width, int height)
+    {
+        WallMap map = new();
+        for (int x = 0; x < width; x++)
+        {
+            map.SetWall(new Position(x, 0), Facing.North, WallType.Solid);
+            map.SetWall(new Position(x, height - 1), Facing.South, WallType.Solid);
+        }
+
+        for (int y = 0; y < height; y++)
+        {
+            map.SetWall(new Position(0, y), Facing.West, WallType.Solid);
+            map.SetWall(new Position(width - 1, y), Facing.East, WallType.Solid);
+        }
+        return map;
+    }
+
+    public static WallMap RandomMap(int width, int height, double wallDensity)
+    {
+        Random random = new();
+        WallMap map = CreateEmpty(width, height);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                foreach (Facing f in FacingExtensions.Values)
+                {
+                    if (random.NextDouble() < wallDensity)
+                    {
+                        map.SetWall(new Position(x, y), f, WallType.Solid);
+                    }
+                }
+            }
+        }
+        return map;
+    }
+}

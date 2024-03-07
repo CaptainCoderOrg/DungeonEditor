@@ -6,9 +6,10 @@ using Raylib_cs;
 
 public class DungeonEditorScreen : IScreen
 {
+    public const int MaxMapSize = 24;
     public const int CellSize = 16;
     public Cursor Cursor { get; private set; } = new(new Position(0, 0), Facing.West);
-    public WallMap WallMap { get; private set; } = new();
+    public WallMap WallMap { get; private set; } = WallMapExtensions.CreateEmpty(MaxMapSize, MaxMapSize);
     private string? _filename = null;
     private readonly InfoOverLayScreen _overlay = new();
     public IScreen EditorMenu => new ModalMenuScreen(
@@ -20,11 +21,25 @@ public class DungeonEditorScreen : IScreen
                 _filename is null ? SaveAs : Save
             ),
             new StaticEntry("Save As", SaveAs),
+            new StaticEntry("New Map", NewMap),
+            new StaticEntry("Randomize Map", RandomizeMap),
             new StaticEntry("Load", LoadMap),
             new StaticEntry("Return to Editor", () => Program.Screen = this),
             new StaticEntry("Exit Editor", Program.Exit),
         ]
     ));
+
+    private void RandomizeMap()
+    {
+        WallMap = WallMapExtensions.RandomMap(MaxMapSize, MaxMapSize, .25);
+        Program.Screen = this;
+    }
+
+    private void NewMap()
+    {
+        WallMap = WallMapExtensions.CreateEmpty(MaxMapSize, MaxMapSize);
+        Program.Screen = this;
+    }
 
     public void Save()
     {
@@ -79,8 +94,9 @@ public class DungeonEditorScreen : IScreen
     public void Render()
     {
         Raylib.ClearBackground(Color.Black);
-        WallMap.Render();
-        Cursor.Render();
+        int offset = CellSize * 2;
+        WallMap.Render(offset, offset);
+        Cursor.Render(CellSize, offset, offset);
         _overlay.Render();
     }
 
@@ -144,6 +160,8 @@ public class DungeonEditorScreen : IScreen
         {
             Cursor = MoveOrRotate(Facing.West);
         }
+
+        Cursor = Cursor with { Position = Cursor.Position.Clamp(MaxMapSize, MaxMapSize) };
     }
 
     private Cursor MoveOrRotate(Facing facing)
