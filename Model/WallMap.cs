@@ -12,7 +12,7 @@ public class WallMap()
     }
     private readonly Dictionary<TileEdge, WallType> _map = new();
     public IReadOnlyDictionary<TileEdge, WallType> Map => new ReadOnlyDictionary<TileEdge, WallType>(_map);
-    public bool SetWall(Position position, Facing facing, WallType wall) => _map.TryAdd(new TileEdge(position, facing).Normalize(), wall);
+    public void SetWall(Position position, Facing facing, WallType wall) => _map[new TileEdge(position, facing).Normalize()] = wall;
     public bool RemoveWall(Position position, Facing facing) => _map.Remove(new TileEdge(position, facing).Normalize());
     public WallType GetWall(Position position, Facing facing) => _map[new TileEdge(position, facing).Normalize()];
     public bool TryGetWall(Position position, Facing facing, out WallType wall) => _map.TryGetValue(new TileEdge(position, facing).Normalize(), out wall);
@@ -46,19 +46,34 @@ public static class WallMapExtensions
         return map;
     }
 
-    public static WallMap RandomMap(int width, int height, double wallDensity)
+    public static WallMap RandomMap(int width, int height, double wallDensity, double doorDensity, double secretDoorDensity)
     {
         Random random = new();
         WallMap map = CreateEmpty(width, height);
+        Facing[] directions = [Facing.North, Facing.West];
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                foreach (Facing f in FacingExtensions.Values)
+                foreach (Facing f in directions)
                 {
                     if (random.NextDouble() < wallDensity)
                     {
-                        map.SetWall(new Position(x, y), f, WallType.Solid);
+                        if (random.NextDouble() < doorDensity)
+                        {
+                            if (random.NextDouble() < secretDoorDensity)
+                            {
+                                map.SetWall(new Position(x, y), f, WallType.SecretDoor);
+                            }
+                            else
+                            {
+                                map.SetWall(new Position(x, y), f, WallType.Door);
+                            }
+                        }
+                        else
+                        {
+                            map.SetWall(new Position(x, y), f, WallType.Solid);
+                        }
                     }
                 }
             }

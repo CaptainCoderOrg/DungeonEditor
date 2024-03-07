@@ -8,12 +8,20 @@ public static class WallMapRenderer
 {
     public static void Render(this WallMap map, int left = 0, int top = 0)
     {
-        foreach ((TileEdge edge, WallType _) in map.Map)
+        foreach ((TileEdge edge, WallType wall) in map.Map)
         {
             Line line = edge.ToScreenCoords(DungeonEditorScreen.CellSize, left, top);
-            line.Render(2, Color.DarkGray);
+            line.Render(2, GetWallColor(wall));
         }
     }
+
+    private static Color GetWallColor(WallType wall) => wall switch
+    {
+        WallType.Solid => Color.DarkGray,
+        WallType.Door => Color.Beige,
+        WallType.SecretDoor => Color.Blue,
+        _ => throw new Exception($"Unknown wall type: {wall}"),
+    };
 
     public static Line ToScreenCoords(this TileEdge edge, int cellSize, int left = 0, int top = 0)
     {

@@ -9,6 +9,7 @@ public class DungeonEditorScreen : IScreen
     public const int MaxMapSize = 24;
     public const int CellSize = 16;
     public Cursor Cursor { get; private set; } = new(new Position(0, 0), Facing.West);
+    public WallType Wall { get; private set; } = WallType.Solid;
     public WallMap WallMap { get; private set; } = WallMapExtensions.CreateEmpty(MaxMapSize, MaxMapSize);
     private string? _filename = null;
     private readonly InfoOverLayScreen _overlay = new();
@@ -31,7 +32,7 @@ public class DungeonEditorScreen : IScreen
 
     private void RandomizeMap()
     {
-        WallMap = WallMapExtensions.RandomMap(MaxMapSize, MaxMapSize, .25);
+        WallMap = WallMapExtensions.RandomMap(MaxMapSize, MaxMapSize, .50, .25, .10);
         Program.Screen = this;
     }
 
@@ -102,19 +103,24 @@ public class DungeonEditorScreen : IScreen
 
     public void HandleUserInput()
     {
+        if (Raylib.IsKeyPressed(KeyboardKey.Tab))
+        {
+            Wall = Wall.Next();
+            _overlay.AddMessage($"WallType: {Wall}", Color.Green, .5f);
+        }
         if (Raylib.IsKeyPressed(KeyboardKey.Escape))
         {
             Program.Screen = EditorMenu;
         }
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
-            if (WallMap.TryGetWall(Cursor.Position, Cursor.Facing, out _))
+            if (WallMap.TryGetWall(Cursor.Position, Cursor.Facing, out WallType wall) && wall == Wall)
             {
                 WallMap.RemoveWall(Cursor.Position, Cursor.Facing);
             }
             else
             {
-                WallMap.SetWall(Cursor.Position, Cursor.Facing, WallType.Solid);
+                WallMap.SetWall(Cursor.Position, Cursor.Facing, Wall);
             }
         }
         HandleCursorMovement();
