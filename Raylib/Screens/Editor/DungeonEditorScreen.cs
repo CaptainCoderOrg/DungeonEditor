@@ -43,17 +43,24 @@ public class DungeonEditorScreen : IScreen
         Program.Screen = new PromptScreen("Save As", this, OnFinished);
         void OnFinished(string filename)
         {
-            _filename = $"{filename}.json";
+            _filename = Path.Combine(".save-data", $"{filename}.json");
             Save();
         }
     }
 
     public void LoadMap()
     {
-        Program.Screen = new PromptScreen("Load File", this, OnFinish);
-        void OnFinish(string filename)
+        string[] filenames = Directory.GetFiles(Path.Combine(".save-data"));
+        Program.Screen = new ModalMenuScreen(
+            this,
+            new MenuScreen(
+                "Load Map",
+                filenames.Select((file, ix) => new StaticEntry(file, () => LoadMap(file)))
+            )
+        );
+
+        void LoadMap(string filename)
         {
-            filename = $"{filename}.json";
             if (!File.Exists(filename))
             {
                 Console.Error.WriteLine($"File not found: {filename}");
@@ -65,6 +72,7 @@ public class DungeonEditorScreen : IScreen
             _filename = filename;
             string json = File.ReadAllText(filename);
             WallMap = JsonExtensions.LoadModel<WallMap>(json);
+            Program.Screen = this;
         }
     }
 
@@ -97,38 +105,42 @@ public class DungeonEditorScreen : IScreen
     }
 
     private bool IsShiftDown => Raylib.IsKeyDown(KeyboardKey.LeftShift) || Raylib.IsKeyDown(KeyboardKey.RightShift);
+    private bool IsWestKeyPressed => Raylib.IsKeyPressed(KeyboardKey.A) || Raylib.IsKeyPressed(KeyboardKey.Left);
+    private bool IsNorthKeyPressed => Raylib.IsKeyPressed(KeyboardKey.W) || Raylib.IsKeyPressed(KeyboardKey.Up);
+    private bool IsSouthKeyPressed => Raylib.IsKeyPressed(KeyboardKey.S) || Raylib.IsKeyPressed(KeyboardKey.Down);
+    private bool IsEastKeyPressed => Raylib.IsKeyPressed(KeyboardKey.D) || Raylib.IsKeyPressed(KeyboardKey.Right);
 
     private void HandleCursorMovement()
     {
-        if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.W))
+        if (IsShiftDown && IsNorthKeyPressed)
         {
             Cursor = Cursor.Move(Facing.North);
         }
-        else if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.S))
+        else if (IsShiftDown && IsSouthKeyPressed)
         {
             Cursor = Cursor.Move(Facing.South);
         }
-        else if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.D))
+        else if (IsShiftDown && IsEastKeyPressed)
         {
             Cursor = Cursor.Move(Facing.East);
         }
-        else if (IsShiftDown && Raylib.IsKeyPressed(KeyboardKey.A))
+        else if (IsShiftDown && IsWestKeyPressed)
         {
             Cursor = Cursor.Move(Facing.West);
         }
-        else if (Raylib.IsKeyPressed(KeyboardKey.W))
+        else if (IsNorthKeyPressed)
         {
             Cursor = MoveOrRotate(Facing.North);
         }
-        else if (Raylib.IsKeyPressed(KeyboardKey.D))
+        else if (IsEastKeyPressed)
         {
             Cursor = MoveOrRotate(Facing.East);
         }
-        else if (Raylib.IsKeyPressed(KeyboardKey.S))
+        else if (IsSouthKeyPressed)
         {
             Cursor = MoveOrRotate(Facing.South);
         }
-        else if (Raylib.IsKeyPressed(KeyboardKey.A))
+        else if (IsWestKeyPressed)
         {
             Cursor = MoveOrRotate(Facing.West);
         }
